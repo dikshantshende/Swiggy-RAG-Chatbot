@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiggy Annual Report Q&A</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        h1 {
+            color: #fc8019;
+            /* Swiggy orange */
+            border-bottom: 2px solid #fc8019;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            grid-column: 1 / -1;
+        }
+
+        .chat-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #fc8019;
+            box-shadow: 0 0 0 3px rgba(252, 128, 25, 0.2);
+        }
+
+        button {
+            background-color: #fc8019;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #e27316;
+        }
+
+        button:disabled {
+            background-color: #fca566;
+            cursor: not-allowed;
+        }
+
+        .response-area {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f3f4f6;
+            border-radius: 4px;
+            min-height: 100px;
+            display: none;
+        }
+
+        .response-area.active {
+            display: block;
+        }
+
+        .answer {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sources {
+            font-size: 0.9rem;
+            color: #4b5563;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+        }
+
+        .source-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .error {
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .tech-stack-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+        }
+
+        .tech-stack-container h3 {
+            margin-top: 0;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .doc-button:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .tech-tag {
+            display: inline-block;
+            background-color: #fc801915;
+            color: #fc8019;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            margin-right: 0.25rem;
+            border: 1px solid #fc801930;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Swiggy Annual Report (FY 2023-24) Q&A</h1>
+
+    <div class="chat-container">
+        <p>Ask a question about the Swiggy Annual Report. The system will retrieve the most relevant sections and
+            generate an accurate, hallucination-free answer with citations.</p>
+
+        <form id="qa-form">
+            <div class="input-group">
+                <input type="text" id="question" placeholder="e.g. What was the gross revenue in 2023?" required />
+                <button type="submit" id="ask-btn">Ask</button>
+            </div>
+        </form>
+
+        <div id="error-message" class="error"></div>
+
+        <div id="response-container" class="response-area">
+            <div id="loading" class="loading" style="display: none;">Analyzing the report... Please wait.</div>
+            <div id="answer-content" style="display: none;">
+                <div class="answer" id="answer-text"></div>
+                <div class="sources" id="sources-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Sidebar -->
+    <aside class="tech-stack-container">
+
+        <a href="/data/Annual-Report-FY-2023-24 (1) (1).pdf" target="_blank" class="doc-button"
+            aria-label="View Source Document">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            View Source Document
+        </a>
+
+        <h3>Powered By</h3>
+
+        <div>
+            <strong>Core Frameworks</strong><br>
+            <span class="tech-tag">FastAPI</span>
+            <span class="tech-tag">LangChain</span>
+            <span class="tech-tag">Python 3.11</span>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <strong>AI & Embeddings</strong><br>
+            <span class="tech-tag">Gemini 2.5 Flash</span>
+            <span class="tech-tag">BGE-Small-EN</span>
+            <span class="tech-tag">Sentence Transformers</span>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <strong>Vector Database</strong><br>
+            <span class="tech-tag">FAISS</span>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <strong>Document Processing</strong><br>
+            <span class="tech-tag">PyPDF</span>
+            <span class="tech-tag">Recursive Text Splitter</span>
+        </div>
+
+        <div
+            style="margin-top: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1rem; font-size: 0.85rem; color: #6b7280;">
+            <p><strong>Goal:</strong> A production-ready, hallucination-free RAG architecture relying exclusively on the
+                provided context document with explicit source citations.</p>
+        </div>
+    </aside>
+
+    <script>
+        document.getElementById('qa-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const questionInput = document.getElementById('question');
+            const askBtn = document.getElementById('ask-btn');
+            const responseContainer = document.getElementById('response-container');
+            const loading = document.getElementById('loading');
+            const answerContent = document.getElementById('answer-content');
+            const answerText = document.getElementById('answer-text');
+            const sourcesList = document.getElementById('sources-list');
+            const errorMessage = document.getElementById('error-message');
+
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            // Reset UI state
+            errorMessage.style.display = 'none';
+            responseContainer.classList.add('active');
+            loading.style.display = 'block';
+            answerContent.style.display = 'none';
+            askBtn.disabled = true;
+
+            try {
+                const response = await fetch('/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.detail || 'Failed to fetch the answer. Please try again.');
+                }
+
+                const data = await response.json();
+
+                // Display Answer
+                answerText.innerText = data.answer || "No answer returned.";
+
+                // Display Sources
+                sourcesList.innerHTML = '';
+                if (data.sources && data.sources.length > 0) {
+                    sourcesList.innerHTML = '<strong>Supporting Evidence:</strong><br/>';
+                    data.sources.forEach((src, idx) => {
+                        const page = src.page !== undefined ? src.page : 'Unknown';
+                        const text = src.text || 'No snippet';
+
+                        const sourceDiv = document.createElement('div');
+                        sourceDiv.className = 'source-item';
+                        sourceDiv.innerHTML = `<em>[${idx + 1}] Page ${page}:</em> "${text}"`;
+                        sourcesList.appendChild(sourceDiv);
+                    });
+                }
+
+                loading.style.display = 'none';
+                answerContent.style.display = 'block';
+
+            } catch (error) {
+                loading.style.display = 'none';
+                errorMessage.innerText = error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                askBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
