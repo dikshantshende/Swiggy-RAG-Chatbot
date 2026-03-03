@@ -30,10 +30,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 
-# Data and Vector Store
-data/
-faiss_index/
-
 # Logs
 *.log
 ingest_output.log
