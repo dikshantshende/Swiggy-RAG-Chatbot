@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     VECTOR_STORE_DIR: str = os.path.join(BASE_DIR, "faiss_index")
     
     # Expected PDF paths (for default processing)
-    DEFAULT_PDF_PATH: str = os.path.join(DATA_DIR, "swiggy_annual_report.pdf")
+    DEFAULT_PDF_PATH: str = os.path.join(DATA_DIR, "Annual-Report-FY-2023-24 (1) (1).pdf")
     
     # RAG Settings
     CHUNK_SIZE: int = 1000
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     RETRIEVER_K: int = 5
     
     # Model preferences
-    EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
+    EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     LLM_MODEL: str = "gemini-2.5-flash"
     
     # API Keys - Expected to be passed via environment or .env file

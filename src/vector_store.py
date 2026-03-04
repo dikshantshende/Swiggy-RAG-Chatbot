@@ -2,7 +2,7 @@ import os
 from typing import List
 from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 from src.config import settings
 
@@ -12,9 +12,10 @@ class VectorStoreManager:
     Provides methods for index creation, persistence, and semantic search retrieval.
     """
     def __init__(self):
-        # Using local HuggingFace embeddings (BGE-Small) defined in config
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name=settings.EMBEDDING_MODEL,
+        # Using API-based Google Generative AI embeddings
+        self.embeddings = GoogleGenerativeAIEmbeddings(
+            model=settings.EMBEDDING_MODEL,
+            google_api_key=settings.GEMINI_API_KEY
         )
         self.vector_store_dir = settings.VECTOR_STORE_DIR
         self.vector_store = None
